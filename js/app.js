@@ -1,8 +1,10 @@
 const MAPBOX_GEOCODING_API = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
-const MAPBOX_ACCESS_TOKEN = ""; // fill in your personal mapbox acces token here
+const MAPBOX_ACCESS_TOKEN = "";
 const COORDINATES = [];
 
 // 3.668619403615469,51.08737614776184.json?access_token=pk.eyJ1IjoiZi1yb2dlcnMiLCJhIjoiY2p2MHFiem1iMTJhODN5bzRvenMwOWc0NSJ9.hAcN6R50XcaUwh0NI98Ifw
+
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 const getLocation = () => {
   // haal de huidige accurate positie op van de gebruiker
@@ -10,14 +12,21 @@ const getLocation = () => {
     (position) => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
-      // adres uit de geocoding api halen
+
       getAddress([longitude, latitude]);
-      // great succes
-      let url = `https://www.bing.com/maps/embed?h=800&w=800&cp=${latitude}~${longitude}&lvl=16&typ=d&sty=r&src=SHELL&FORM=MBEDV8`;
-      const iframe = `
-        <iframe src="${url}" title="Bing Maps" width="800" height="800"></iframe> 
-        `;
-      document.body.querySelector("#wrapper").innerHTML = iframe;
+
+      var map = new mapboxgl.Map({
+        container: "map", // container ID
+        style: "mapbox://styles/f-rogers/cklgnxr1m0j1b17qo2ul24qi6", // style URL
+        center: [longitude, latitude], // starting position [lng, lat]
+        zoom: 15, // starting zoom
+      });
+
+      var el = document.createElement("div");
+      el.className = "marker";
+      el.style.backgroundImage = 'url("./images/marker.png")';
+
+      var marker = new mapboxgl.Marker(el).setLngLat([longitude, latitude]).addTo(map);
     },
     (error) => {
       // oh boy oh boy another error -_-
